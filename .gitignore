@@ -1,2 +1,5 @@
 input/
 workspace/
+
+*.egg-info/
+pyproject.toml

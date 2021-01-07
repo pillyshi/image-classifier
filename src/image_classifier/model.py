@@ -14,8 +14,8 @@ class ImageClassifier:
     def train(self, images: List[np.ndarray], labels: List[str]):
         X, y = self._fit_transform(images, labels)
         self.classifier.fit(X, y)
-    
-    def classify(self, images: List[np.ndarray]):
+
+    def classify(self, images: List[np.ndarray]) -> List[str]:
         X, ids = self._transform(images)
         proba = self.classifier.predict_proba(X)
         return [self.classifier.classes_[proba[ids == id].sum(axis=0).argmax()] for id in np.sort(np.unique(ids))]
@@ -51,4 +51,3 @@ class ImageClassifier:
         X = np.array(X) / 255
         ids = np.array(ids)
         return X, ids
-    

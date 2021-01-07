@@ -15,7 +15,9 @@ class Option(Tap):
     out_model: str
 
 
-def main(option: Option) -> None:
+def main() -> None:
+    option = Option().parse_args()
+
     images: List[np.ndarray] = []
     labels: List[str] = []
     for label in os.listdir(option.in_dir):
@@ -30,5 +32,4 @@ def main(option: Option) -> None:
 
 
 if __name__ == "__main__":
-    option = Option().parse_args()
     main(option)
