@@ -1,8 +1,8 @@
-FLAKE8 ?= pipenv run flake8 --ignore=E501
+FLAKE8 ?= pipenv run flake8
 MYPY ?= pipenv run mypy --pretty
 
 flake8:
-	$(FLAKE8) image_classifier
+	$(FLAKE8) src/image_classifier
 
 mypy:
-	$(MYPY) image_classifier
+	$(MYPY) src/image_classifier
