@@ -100,7 +100,6 @@ class Option(Tap):
 
     def configure(self):
         self.add_subparsers(help='')
-        setattr(TrainOption, 'main', train)
         self.add_subparser('train', TrainOption, help='')
         self.add_subparser('classify', ClassifyOption, help='')
         self.add_subparser('crop', CropOption, help='')
