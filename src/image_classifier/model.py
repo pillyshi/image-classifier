@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import Tuple, List, Union
 
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
@@ -11,7 +11,7 @@ class ImageClassifier:
         self.stride = stride
         self.classifier = RandomForestClassifier(n_estimators=n_estimators, random_state=random_state)
 
-    def train(self, images: List[np.ndarray], labels: List[str]):
+    def train(self, images: List[np.ndarray], labels: List[Union[int, str]]):
         X, y = self._fit_transform(images, labels)
         self.classifier.fit(X, y)
 
