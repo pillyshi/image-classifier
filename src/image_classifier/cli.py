@@ -23,9 +23,8 @@ class TrainOption(Tap):
 
 class ClassifyOption(Tap):
     name: str = 'classify'
-    in_dir: str
+    filename: str
     in_model: str
-    out_file: str
 
 
 class CropOption(Tap):
@@ -71,17 +70,12 @@ def train(option: TrainOption) -> None:
 
 
 def classify(option: ClassifyOption) -> None:
-    images: List[np.ndarray] = []
-    filenames = glob.glob(os.path.join(option.in_dir, '*.*'))
-    for filename in filenames:
-        image = cv2.imread(filename)
-        images.append(image)
+    image: np.ndarray = cv2.imread(option.filename)
 
     model = load_model(option.in_model)
-    labels = model.classify(images)
+    labels = model.classify([image])
 
-    rows = [Row(filename, label) for filename, label in zip(filenames, labels)]
-    to_csv(rows, option.out_file)
+    print(labels[0])
 
 
 def crop(option: CropOption) -> None:
