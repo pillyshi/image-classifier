@@ -1,4 +1,4 @@
-from typing import Tuple, List, Union
+from typing import Tuple, List, Union, Generator
 
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
@@ -16,9 +16,13 @@ class ImageClassifier:
         self.classifier.fit(X, y)
 
     def classify(self, images: List[np.ndarray]) -> List[str]:
-        X, ids = self._transform(images)
-        proba = self.classifier.predict_proba(X)
-        return [self.classifier.classes_[proba[ids == id].sum(axis=0).argmax()] for id in np.sort(np.unique(ids))]
+        proba = []
+        ids_all = []
+        for X, ids in self._iter_transform(images):
+            proba.append(self.classifier.predict_proba(X))
+            ids_all = np.concatenate([ids_all, ids])
+        proba_all = np.vstack(proba)
+        return [self.classifier.classes_[proba_all[ids == id].sum(axis=0).argmax()] for id in np.sort(np.unique(ids_all))]
 
     def _fit_transform(self, images: List[np.ndarray], labels: List[str]) -> Tuple[np.ndarray, np.ndarray]:
         window = self.window
@@ -51,3 +55,20 @@ class ImageClassifier:
         X = np.array(X) / 255
         ids = np.array(ids)
         return X, ids
+
+    def _iter_transform(self, images: List[np.ndarray], batch_size=100) -> Generator[Tuple[np.ndarray, np.ndarray], None, None]:
+        window = self.window
+        stride = self.stride
+        X: List[np.ndarray] = []
+        ids: List[int] = []
+        for id, image in enumerate(images):
+            h, w = image.shape[0], image.shape[1]
+            for i in range(window[0], h - window[0], stride[0]):
+                for j in range(window[1], w - window[1], stride[1]):
+                    x = image[(i - window[0]):(i + window[0]), (j - window[1]):(j + window[1]), :].ravel()
+                    X.append(x)
+                    ids.append(id)
+                    if len(X) >= batch_size:
+                        yield np.array(X) / 255, np.array(ids)
+                        X = []
+                        ids = []
