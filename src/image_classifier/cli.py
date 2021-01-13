@@ -1,7 +1,7 @@
 import os
 import glob
 import pickle
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from dataclasses import dataclass
 
 import cv2
@@ -15,6 +15,10 @@ class TrainOption(Tap):
     name: str = 'train'
     in_dir: str
     out_model: str
+    window: Tuple[int, int] = (5, 5)
+    stride: Tuple[int, int] = (5, 5)
+    n_estimators: int = 50
+    random_state: int = 1
 
 
 class ClassifyOption(Tap):
@@ -60,7 +64,7 @@ def train(option: TrainOption) -> None:
             image = cv2.imread(filename)
             images.append(image)
             labels.append(label)
-    classifier = ImageClassifier()
+    classifier = ImageClassifier(option.window, option.stride, option.n_estimators, option.random_state)
     classifier.train(images, labels)
     with open(option.out_model, 'wb') as fp:
         pickle.dump(classifier, fp)
