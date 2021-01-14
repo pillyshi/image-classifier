@@ -1,6 +1,7 @@
 import os
 import glob
 import pickle
+import json
 from typing import List, Optional, Tuple
 from dataclasses import dataclass
 
@@ -19,6 +20,7 @@ class TrainOption(Tap):
     stride: Tuple[int, int] = (5, 5)
     n_estimators: int = 50
     random_state: int = 1
+    n_samples: Optional[int] = None
 
 
 class ClassifyOption(Tap):
@@ -63,7 +65,7 @@ def train(option: TrainOption) -> None:
             image = cv2.imread(filename)
             images.append(image)
             labels.append(label)
-    classifier = ImageClassifier(option.window, option.stride, option.n_estimators, option.random_state)
+    classifier = ImageClassifier(option.window, option.stride, option.n_estimators, option.random_state, option.n_samples)
     classifier.train(images, labels)
     with open(option.out_model, 'wb') as fp:
         pickle.dump(classifier, fp)
@@ -73,9 +75,8 @@ def classify(option: ClassifyOption) -> None:
     image: np.ndarray = cv2.imread(option.filename)
 
     model = load_model(option.in_model)
-    labels = model.classify([image])
-
-    print(labels[0])
+    proba = model.predict_proba([image])
+    print(json.dumps(proba, indent=2))
 
 
 def crop(option: CropOption) -> None:
