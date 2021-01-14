@@ -5,7 +5,7 @@ import numpy as np
 
 class ImageClassifier:
 
-    def __init__(self, window: Tuple[int, int], stride: Tuple[int, int], n_estimators: int, random_state: int, n_samples: Optional[int]):
+    def __init__(self, window: Tuple[int, int] = (5, 5), stride: Tuple[int, int] = (5, 5), n_estimators: int = 50, random_state: int = 1, n_samples: Optional[Tuple[int, int]] = None):
         ...
 
     def train(self, images: List[np.ndarray], labels: List[str]):

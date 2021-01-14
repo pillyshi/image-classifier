@@ -20,7 +20,7 @@ class TrainOption(Tap):
     stride: Tuple[int, int] = (5, 5)
     n_estimators: int = 50
     random_state: int = 1
-    n_samples: Optional[int] = None
+    n_samples: Tuple[int, int] = (None, None)
 
 
 class ClassifyOption(Tap):
