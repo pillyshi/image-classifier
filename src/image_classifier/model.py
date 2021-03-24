@@ -5,6 +5,33 @@ from sklearn.preprocessing import LabelEncoder
 from xgboost import XGBClassifier
 
 
+class ImageTransformer:
+
+    def __init__(self, window: Tuple[int, int] = (5, 5), stride: Tuple[int, int] = (5, 5), random_state: int = 1, n_samples: Optional[Tuple[int, int]] = None):
+        self.window = window
+        self.stride = stride
+        self.random_state = random_state
+        self.n_samples = n_samples
+
+    def transform(self, image: np.ndarray) -> np.ndarray:
+        rnd = np.random.RandomState(self.random_state)
+        window = self.window
+        stride = self.stride
+        h, w = image.shape[0], image.shape[1]
+        x_indices = np.arange(window[1], w - window[1], stride[1])
+        y_indices = np.arange(window[0], h - window[0], stride[0])
+        X: List[np.ndarray] = []
+        if self.n_samples[0] is not None:
+            y_indices = rnd.choice(y_indices, min(len(y_indices), self.n_samples[0]), replace=False)
+        if self.n_samples[1] is not None:
+            x_indices = rnd.choice(x_indices, min(len(x_indices), self.n_samples[1]), replace=False)
+        for i in y_indices:
+            for j in x_indices:
+                x = image[(i - window[0]):(i + window[0]), (j - window[1]):(j + window[1]), :].ravel()
+                X.append(x)
+        return np.array(X) / 255
+
+
 class ImageClassifier:
 
     def __init__(self, window: Tuple[int, int] = (5, 5), stride: Tuple[int, int] = (5, 5), n_estimators: int = 50, random_state: int = 1, n_samples: Optional[Tuple[int, int]] = None):
